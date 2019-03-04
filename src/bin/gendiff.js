@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import * as library from '../index';
 
 const program = require('commander');
 
@@ -7,5 +8,10 @@ program
   .option('-V, --version', 'output the version number')
   .option('-f, --format [type]', 'Output format');
 
+  program
+    .command('<firstConfig> <secondConfig>')
+
+
 program.parse(process.argv);
+
 program.help();
