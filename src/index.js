@@ -1,18 +1,23 @@
 /* eslint-disable */
-import { has } from 'lodash';
+import { has, zip } from 'lodash';
 
 const noChanges = '\n    ';
 const plusLine = '\n  + ';
 const minusLine = '\n  - ';
 
 export default (beforeObj, afterObj) => {
-  const reduceFunc = (str, key) => {
-    if (!has(afterObj, key)) return `${str}${minusLine}${key}: ${beforeObj[key]}`;
-    if (beforeObj[key] === afterObj[key]) return `${str}${noChanges}${key}: ${beforeObj[key]}`;
-    const minus = `${minusLine}${key}: ${beforeObj[key]}`;
-    const plus = `${plusLine}${key}: ${afterObj[key]}`;
-    return `${str}${plus}${minus}`;
+  const afterKeys = Object.keys(afterObj);
+  const beforeKeys = Object.keys(beforeObj);
+
+  const generateDiff = (str, [key1, key2]) => {
+    if (!has(afterObj, key1)) return `${str}${minusLine}${key1}: ${beforeObj[key1]}`;
+    if (beforeObj[key1] === afterObj[key1]) return `${str}${noChanges}${key1}: ${beforeObj[key1]}`;
+    const minus = `${minusLine}${key1}: ${beforeObj[key1]}`;
+    const plus = `${plusLine}${key1}: ${afterObj[key1]}`;
+    const newLine = has(beforeObj, key2) ? '' : `${plusLine}${key2}: ${afterObj[key2]}`;
+    return `${str}${plus}${minus}${newLine}`;
   };
-  const result = Object.keys(beforeObj).reduce(reduceFunc, '');
+
+  const result = zip(beforeKeys, afterKeys).reduce(generateDiff, '');
   return `{${result}\n}\n`;
 };
