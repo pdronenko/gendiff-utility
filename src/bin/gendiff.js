@@ -15,8 +15,8 @@ program
     const parse = path => JSON.parse(fs.readFileSync(path, 'UTF-8', fileCheck));
     const firstConfigData = parse(firstConfig);
     const secondConfigData = parse(secondConfig);
-
-    return gendiff(parse(firstConfigData, secondConfigData));
+    return 'hello';
+//    return gendiff(parse(firstConfigData, secondConfigData));
   });
 
 program.parse(process.argv);
