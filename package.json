@@ -1,6 +1,6 @@
 {
   "name": "gendiff-pdronenko",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Compares two configuration files and shows a difference.",
   "bin": {
     "gendiff": "dist/bin/gendiff.js"
