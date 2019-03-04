@@ -9,7 +9,8 @@ program
   .option('-f, --format [type]', 'Output format');
 
   program
-    .command('<firstConfig> <secondConfig>')
+    .command('')
+    .option("<firstConfig> <secondConfig>")
 
 
 program.parse(process.argv);
