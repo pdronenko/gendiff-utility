@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import gendiff from 'gendiff-pdronenko';
+import gendiff from '..';
 import { version } from '../../package.json';
 
 const program = require('commander');
