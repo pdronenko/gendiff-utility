@@ -1,23 +1,35 @@
 /* eslint-disable */
 import { has, zip } from 'lodash';
 
-const noChanges = '\n    ';
-const plusLine = '\n  + ';
-const minusLine = '\n  - ';
+const lineBuilder = (sign, key, value) => `\n  ${sign} ${key}: ${value}`;
 
 export default (beforeObj, afterObj) => {
-  const afterKeys = Object.keys(afterObj);
-  const beforeKeys = Object.keys(beforeObj);
+  const lineBuilders = [
+    {
+      check: (key) => beforeObj[key] === afterObj[key],
+      process: (key1, key2) => lineBuilder(' ', key1, beforeObj[key1]),
+    },
+    {
+      check: (key) => !has(afterObj, key),
+      process: (key1, key2) => lineBuilder('-', key1, beforeObj[key1]),
+    },
+    {
+      check: () => true,
+      process: (key1, key2) => {
+        const addedLine = lineBuilder('+', key2, afterObj[key2]);
+        const minusLine = lineBuilder('-', key1, beforeObj[key1]);
+        const plusLine = lineBuilder('+', key1, afterObj[key1]);
+        return `${plusLine}${minusLine}${addedLine}`;
+      },
+    },
+  ];
+  const getDiffAction = key => lineBuilders.find(({ check }) => check(key));
 
   const generateDiff = (str, [key1, key2]) => {
-    if (!has(afterObj, key1)) return `${str}${minusLine}${key1}: ${beforeObj[key1]}`;
-    if (beforeObj[key1] === afterObj[key1]) return `${str}${noChanges}${key1}: ${beforeObj[key1]}`;
-    const minus = `${minusLine}${key1}: ${beforeObj[key1]}`;
-    const plus = `${plusLine}${key1}: ${afterObj[key1]}`;
-    const newLine = has(beforeObj, key2) ? '' : `${plusLine}${key2}: ${afterObj[key2]}`;
-    return `${str}${plus}${minus}${newLine}`;
+    const { process } = getDiffAction(key1);
+    return `${str}${process(key1, key2)}`
   };
-
-  const result = zip(beforeKeys, afterKeys).reduce(generateDiff, '');
-  return `{${result}\n}\n`;
+  const diffLines = zip(Object.keys(beforeObj), Object.keys(afterObj))
+    .reduce(generateDiff, '');
+  return `{${diffLines}\n}\n`;
 };
