@@ -1,6 +1,6 @@
 ##
 
-Repository of gendiff cli utility which compares two configuration files and shows a difference.
+Repository of gendiff cli utility, which compares two configuration files and shows a difference.
 
 ##
 
