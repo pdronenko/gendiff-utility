@@ -8,4 +8,4 @@ program
   .option('-f, --format [type]', 'Output format');
 
 program.parse(process.argv);
-if (program.help) console.log('  - help');
+program.help();
