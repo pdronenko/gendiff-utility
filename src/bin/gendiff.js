@@ -7,6 +7,5 @@ program
   .option('-V, --version', 'output the version number')
   .option('-f, --format [type]', 'Output format');
 
-
-
 program.parse(process.argv);
+if (program.help) console.log('  - help');
