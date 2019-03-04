@@ -2,6 +2,10 @@
   "name": "gendiff-pdronenko",
   "version": "0.2.1",
   "description": "Compares two configuration files and shows a difference.",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/pdronenko/project-lvl2-s439"
+  },
   "bin": {
     "gendiff": "dist/bin/gendiff.js"
   },
@@ -40,6 +44,8 @@
   },
   "dependencies": {
     "commander": "^2.19.0",
-    "source-map-support": "^0.5.10"
+    "lodash": "^4.17.11",
+    "source-map-support": "^0.5.10",
+    "gendiff-pdronenko": "*"
   }
 }
