@@ -39,6 +39,7 @@
     "jest-cli": "^24.0.0"
   },
   "dependencies": {
+    "commander": "^2.19.0",
     "source-map-support": "^0.5.10"
   }
 }
