@@ -46,7 +46,6 @@
   "dependencies": {
     "commander": "^2.19.0",
     "lodash": "^4.17.11",
-    "source-map-support": "^0.5.10",
-    "gendiff-pdronenko": "*"
+    "source-map-support": "^0.5.10"
   }
 }
