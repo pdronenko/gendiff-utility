@@ -10,5 +10,3 @@ program
   .command('<firstConfig> <secondConfig>');
 
 program.parse(process.argv);
-
-program.help();
