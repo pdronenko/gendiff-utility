@@ -10,5 +10,5 @@ program
   .option('-f, --format [type]', 'Output format')
   .command('<firstConfig> <secondConfig>');
 
-program.version(0.0.1);
+program.version('0.0.1');
 program.parse(process.argv);
