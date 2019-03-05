@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import gendiff from '..';
 import { version } from '../../package.json';
+import program from 'commander';
 
-const program = require('commander');
 const fs = require('fs');
+const path = require('path');
 
 program
   .arguments('<firstConfig> <secondConfig>')
@@ -11,12 +12,25 @@ program
   .version(version)
   .option('-f, --format [type]', 'Output format')
   .action((firstConfig, secondConfig) => {
-    const fileCheck = (err, data) => (err ? console.error(err) : data);
-    const parse = path => JSON.parse(fs.readFileSync(path, 'UTF-8', fileCheck));
-    const firstConfigData = parse(firstConfig);
-    const secondConfigData = parse(secondConfig);
+    const isExtnameJSON = p => path.extname(p).toLowerCase() === '.json';
 
-    return gendiff(parse(firstConfigData, secondConfigData));
+    if (!isExtnameJSON(firstConfig)) {
+      console.log(`${firstConfig} is not JSON file`);
+      return;
+    }
+    if (!isExtnameJSON(secondConfig)) {
+      console.log(`${secondConfig} is not JSON file`);
+      return;
+    }
+    const pathProcess = (p) => {
+      const fullPath = path.isAbsolute(p) ? p : `${process.cwd()}/${p}`;
+      return path.normalize(fullPath);
+    };
+
+    const parseFile = p => JSON.parse(fs.readFileSync(p, 'UTF-8'));
+    const firstData = parseFile(pathProcess(firstConfig));
+    const secondData = parseFile(pathProcess(secondConfig));
+    console.log(gendiff(firstData, secondData));
   });
 
 program.parse(process.argv);
