@@ -1,7 +1,6 @@
+import fs from 'fs';
 import gendiff from '../src';
 import { readDataFromFile } from '../src/parsers';
-
-const fs = require('fs');
 
 const getExpectedDiff = () => readDataFromFile('__tests__/__fixtures__/expectedResult', 'UTF-8');
 const getReceivedDiff = () => readDataFromFile('__tests__/__fixtures__/receivedResult', 'UTF-8');

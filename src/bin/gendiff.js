@@ -3,8 +3,7 @@ import gendiff from '..';
 import { version } from '../../package.json';
 import program from 'commander';
 import { canExtnameParse } from '../parsers';
-
-const path = require('path');
+import path from 'path';
 
 program
   .arguments('<firstConfig> <secondConfig>')
