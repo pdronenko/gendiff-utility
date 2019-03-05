@@ -23,4 +23,4 @@ $ gendiff [options] <firstConfig> <secondConfig>
 
 ## Video of install and run gendiff utility
 
-<a href="https://asciinema.org/a/231741"><img src="https://asciinema.org/a/231741.svg" width="100%"/></a>
+<a href="https://asciinema.org/a/231797"><img src="https://asciinema.org/a/231797.svg" width="100%"/></a>
