@@ -1,34 +1,46 @@
 /* eslint-disable */
-import { has, zip } from 'lodash';
+import { has, zip, flatten } from 'lodash';
+import { parse } from './parsers';
 
-const lineBuilder = (sign, key, value) => `\n  ${sign} ${key}: ${value}`;
+const buildLine = (key, value) => sign => `  ${sign} ${key}: ${value}`;
 
-export default (beforeObj, afterObj) => {
-  const lineBuilders = [
+const linesConstructor = (beforeData, afterData) => (key) => {
+  const prepareLine = buildLine(key, beforeData[key]);
+  const diffActions = [
     {
-      check: (key) => beforeObj[key] === afterObj[key],
-      process: (key1, key2) => lineBuilder(' ', key1, beforeObj[key1]),
+      name: 'equal',
+      check: beforeData[key] === afterData[key],
+      process: () => prepareLine(' '),
     },
     {
-      check: (key) => !has(afterObj, key),
-      process: (key1, key2) => lineBuilder('-', key1, beforeObj[key1]),
+      name: 'deleted',
+      check: !has(afterData, key),
+      process: () => prepareLine('-'),
     },
     {
-      check: () => true,
-      process: (key1, key2) => {
-        const addedLine = lineBuilder('+', key2, afterObj[key2]);
-        const minusLine = lineBuilder('-', key1, beforeObj[key1]);
-        const plusLine = lineBuilder('+', key1, afterObj[key1]);
-        return `${plusLine}${minusLine}${addedLine}`;
+      name: 'changed',
+      check: has(afterData, key),
+      process: () => {
+        const deletedLine = prepareLine('-');
+        const addedLine = buildLine(key, afterData[key])('+');
+        return [deletedLine, addedLine];
       },
     },
   ];
-  const getDiffAction = key => lineBuilders.find(({ check }) => check(key));
+  const { process } = diffActions.find(({ check }) => check);
+  return process();
+};
 
-  const generateDiff = (str, [key1, key2]) => {
-    const { process } = getDiffAction(key1);
-    return `${str}${process(key1, key2)}`
-  };
-  const diffLines = zip(Object.keys(beforeObj), Object.keys(afterObj)).reduce(generateDiff, '');
-  return `{${diffLines}\n}`;
+export default (pathToFile1, pathToFile2) => {
+  const beforeData = parse(pathToFile1);
+  const afterData = parse(pathToFile2);
+
+  const preConstructor = linesConstructor(beforeData, afterData);
+  const changedData = Object.keys(beforeData).map(key => preConstructor(key));
+  const addedData = Object.keys(afterData)
+    .filter(key => !has(beforeData, key))
+    .map(key => buildLine(key, afterData[key])('+'));
+
+  const diffString = flatten(changedData).concat(addedData).join('\n');
+  return `{\n${diffString}\n}`
 };

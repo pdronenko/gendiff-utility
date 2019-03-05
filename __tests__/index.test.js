@@ -1,16 +1,25 @@
 import gendiff from '../src';
+import { readDataFromFile } from '../src/parsers';
 
 const fs = require('fs');
 
-const fixturesPath = '__tests__/__fixtures__';
+const expectedResultPath = '__tests__/__fixtures__/expectedResult';
+const receivedResultPath = '__tests__/__fixtures__/receivedResult';
+const getExpectedDiff = () => readDataFromFile(expectedResultPath, 'UTF-8');
+const getReceivedDiff = () => readDataFromFile(receivedResultPath, 'UTF-8');
 
-const expectedDiff = () => fs.readFileSync(`${fixturesPath}/expectedResult`, 'UTF-8');
-const receivedDiff = () => fs.readFileSync(`${fixturesPath}/receivedResult`, 'UTF-8');
+test('gendiff JSON test', () => {
+  const writeResult = data => fs.writeFileSync(receivedResultPath, data, 'UTF-8');
+  const pathToBeforeJSON = '__tests__/__fixtures__/initialJSON/before.json';
+  const pathToAfterJSON = '__tests__/__fixtures__/initialJSON/after.json';
+  writeResult(gendiff(pathToBeforeJSON, pathToAfterJSON));
+  expect(getReceivedDiff()).toBe(getExpectedDiff());
+});
 
-const writeResult = data => fs.writeFileSync(`${fixturesPath}/receivedResult`, data, 'UTF-8');
-const parse = filename => JSON.parse(fs.readFileSync(`${fixturesPath}/initialJSON/${filename}`, 'UTF-8'));
-
-test('gendiff test', () => {
-  writeResult(gendiff(parse('before.json'), parse('after.json')));
-  expect(receivedDiff()).toBe(expectedDiff());
+test('gendiff YML test', () => {
+  const writeResult = data => fs.writeFileSync(receivedResultPath, data, 'UTF-8');
+  const pathToBeforeYAML = '__tests__/__fixtures__/initialYAML/before.yml';
+  const pathToAfterYAML = '__tests__/__fixtures__/initialYAML/after.yml';
+  writeResult(gendiff(pathToBeforeYAML, pathToAfterYAML));
+  expect(getReceivedDiff()).toBe(getExpectedDiff());
 });

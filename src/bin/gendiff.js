@@ -2,8 +2,8 @@
 import gendiff from '..';
 import { version } from '../../package.json';
 import program from 'commander';
+import { canExtnameParse } from '../parsers';
 
-const fs = require('fs');
 const path = require('path');
 
 program
@@ -12,14 +12,12 @@ program
   .version(version)
   .option('-f, --format [type]', 'Output format')
   .action((firstConfig, secondConfig) => {
-    const isExtnameJSON = p => path.extname(p).toLowerCase() === '.json';
-
-    if (!isExtnameJSON(firstConfig)) {
-      console.log(`${firstConfig} is not JSON file`);
+    if (!canExtnameParse(path.extname(firstConfig))) {
+      console.log(`${firstConfig} is not correct file format`);
       return;
     }
-    if (!isExtnameJSON(secondConfig)) {
-      console.log(`${secondConfig} is not JSON file`);
+    if (!canExtnameParse(path.extname(secondConfig))) {
+      console.log(`${secondConfig} is not correct file format`);
       return;
     }
     const pathProcess = (p) => {
@@ -27,10 +25,9 @@ program
       return path.normalize(fullPath);
     };
 
-    const readDataFromFile = p => fs.readFileSync(p, 'UTF-8');
-    const firstData = readDataFromFile(pathProcess(firstConfig));
-    const secondData = readDataFromFile(pathProcess(secondConfig));
-    console.log(gendiff(JSON.parse(firstData), JSON.parse(secondData)));
+    const pathToFile1 = pathProcess(firstConfig);
+    const pathToFile2 = pathProcess(secondConfig);
+    console.log(gendiff(pathToFile1, pathToFile2));
   });
 
 program.parse(process.argv);
