@@ -29,7 +29,6 @@ export default (beforeObj, afterObj) => {
     const { process } = getDiffAction(key1);
     return `${str}${process(key1, key2)}`
   };
-  const diffLines = zip(Object.keys(beforeObj), Object.keys(afterObj))
-    .reduce(generateDiff, '');
-  return `{${diffLines}\n}\n`;
+  const diffLines = zip(Object.keys(beforeObj), Object.keys(afterObj)).reduce(generateDiff, '');
+  return `{${diffLines}\n}`;
 };

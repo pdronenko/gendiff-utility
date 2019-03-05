@@ -27,10 +27,10 @@ program
       return path.normalize(fullPath);
     };
 
-    const parseFile = p => JSON.parse(fs.readFileSync(p, 'UTF-8'));
-    const firstData = parseFile(pathProcess(firstConfig));
-    const secondData = parseFile(pathProcess(secondConfig));
-    console.log(gendiff(firstData, secondData));
+    const readDataFromFile = p => fs.readFileSync(p, 'UTF-8');
+    const firstData = readDataFromFile(pathProcess(firstConfig));
+    const secondData = readDataFromFile(pathProcess(secondConfig));
+    console.log(gendiff(JSON.parse(firstData), JSON.parse(secondData)));
   });
 
 program.parse(process.argv);
