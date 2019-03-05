@@ -1,4 +1,5 @@
 import yaml from 'js-yaml';
+import ini from 'ini';
 
 const path = require('path');
 const fs = require('fs');
@@ -11,6 +12,10 @@ const listOfFormats = [
   {
     extname: '.yml',
     process: data => yaml.safeLoad(data),
+  },
+  {
+    extname: '.ini',
+    process: data => ini.parse(data),
   },
 ];
 

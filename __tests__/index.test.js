@@ -20,3 +20,10 @@ test('gendiff YML test', () => {
   writeResult(gendiff(pathToBeforeYAML, pathToAfterYAML));
   expect(getReceivedDiff()).toBe(getExpectedDiff());
 });
+
+test('gendiff INI test', () => {
+  const pathToBeforeINI = '__tests__/__fixtures__/initialINI/before.ini';
+  const pathToAfterINI = '__tests__/__fixtures__/initialINI/after.ini';
+  writeResult(gendiff(pathToBeforeINI, pathToAfterINI));
+  expect(getReceivedDiff()).toBe(getExpectedDiff());
+});
