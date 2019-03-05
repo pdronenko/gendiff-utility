@@ -42,5 +42,5 @@ export default (pathToFile1, pathToFile2) => {
     .map(key => buildLine(key, afterData[key])('+'));
 
   const diffString = flatten(changedData).concat(addedData).join('\n');
-  return `{\n${diffString}\n}`
+  return `{\n${diffString}\n}`;
 };
