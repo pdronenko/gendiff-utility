@@ -19,8 +19,8 @@ program
       console.log(`${secondConfig} is not correct file format`);
       return;
     }
-    const pathProcess = (p) => {
-      const fullPath = path.isAbsolute(p) ? p : `${process.cwd()}/${p}`;
+    const pathProcess = (pathToFile) => {
+      const fullPath = path.isAbsolute(pathToFile) ? pathToFile : `${process.cwd()}/${pathToFile}`;
       return path.normalize(fullPath);
     };
 
