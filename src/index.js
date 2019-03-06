@@ -40,6 +40,7 @@ export default (pathToFile1, pathToFile2) => {
       process: (sign, key) => buildLine(sign, key, afterData[key]),
     },
   ];
+
   const diffString = flatten(
     keys.map((key) => {
       const { sign, process } = diffActions.find(({ check }) => check(key));
