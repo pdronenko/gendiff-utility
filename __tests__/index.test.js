@@ -15,4 +15,7 @@ describe('gendiff', () => {
     expect(receivedDiff).toBe(expectedDiff);
   });
 });
+
 console.log('this is text in master branch');
+console.log('this text written in testBranch');
+
