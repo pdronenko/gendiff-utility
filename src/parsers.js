@@ -2,7 +2,7 @@ import yaml from 'js-yaml';
 import ini from 'ini';
 import { has } from 'lodash';
 
-export const formatsParseList = {
+const formatsParseList = {
   '.json': JSON.parse,
   '.yml': yaml.safeLoad,
   '.ini': ini.parse,
