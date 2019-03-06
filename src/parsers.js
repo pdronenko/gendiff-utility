@@ -1,27 +1,13 @@
 import yaml from 'js-yaml';
 import ini from 'ini';
+import { has } from 'lodash';
 
-export const formatsParseList = [
-  {
-    extname: '.json',
-    process: data => JSON.parse(data),
-  },
-  {
-    extname: '.yml',
-    process: data => yaml.safeLoad(data),
-  },
-  {
-    extname: '.ini',
-    process: data => ini.parse(data),
-  },
-];
-
-export const parse = (data, fileExtname) => {
-  const { process } = formatsParseList.find(({ extname }) => fileExtname === extname);
-  return process(data);
+export const formatsParseList = {
+  '.json': JSON.parse,
+  '.yml': yaml.safeLoad,
+  '.ini': ini.parse,
 };
 
-export const canExtnameParse = (fileExtname) => {
-  const searchResult = formatsParseList.find(({ extname }) => fileExtname === extname);
-  return searchResult !== undefined;
-};
+export const parse = (data, fileExtname) => formatsParseList[fileExtname](data);
+
+export const canExtnameParse = fileExtname => has(formatsParseList, fileExtname);
