@@ -1,6 +1,6 @@
 {
   "name": "gendiff-pdronenko",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Compares two configuration files and shows a difference.",
   "main": "dist/index.js",
   "repository": {
