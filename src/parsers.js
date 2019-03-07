@@ -8,7 +8,7 @@ const formatsParseList = {
   '.ini': ini.parse,
 };
 
-export const parse = (data, fileExtname) => {
+export default (data, fileExtname) => {
   if (!has(formatsParseList, fileExtname)) {
     throw new Error(`${fileExtname} is not correct file format`);
   }

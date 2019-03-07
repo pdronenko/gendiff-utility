@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { has, union, flatten } from 'lodash';
-import { parse } from './parsers';
+import parse from './parsers';
 import path from 'path';
 import fs from 'fs';
 
