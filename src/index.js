@@ -53,25 +53,25 @@ export default (pathToFile1, pathToFile2) => {
 
   const stringify = (value, tab) => {
     if (typeof value === 'string') return value;
-    const addTab = tab.repeat(2);
+    const addTab = tab === '' ? '  ' : tab.repeat(2);
     const entriesString = Object.entries(value).map(([key, value]) => `${key}: ${value}`).join(`\n${addTab}`);
     return `{\n${addTab}${entriesString}\n${tab}}`;
   };
 
   const renderList = { 
-    noChange: (key, value) => `    ${key}: ${JSON.stringify(value)}`, 
-    changed: (key, value) => {
-      const deletedLine = `  - ${key}: ${JSON.stringify(value[0])}`;
-      const addedLine = `  + ${key}: ${JSON.stringify(value[1])}`;
+    noChange: (key, value, tab) => `    ${key}: ${stringify(value, tab.repeat(2))}`, 
+    changed: (key, value, tab) => {
+      const deletedLine = `  - ${key}: ${stringify(value[0], tab.repeat(2))}`;
+      const addedLine = `  + ${key}: ${stringify(value[1], tab.repeat(2))}`;
       return [deletedLine, addedLine];
     }, 
-    deleted: (key, value, tab) => `  - ${key}: ${stringify(value, '  '.repeat(2))}`,
-    added: (key, value) => `  + ${key}: ${stringify(value, '  '.repeat(2))}`,
-    children: () => 'children',
+    deleted: (key, value, tab) => `  - ${key}: ${stringify(value, tab.repeat(2))}`,
+    added: (key, value, tab) => `  + ${key}: ${stringify(value, tab.repeat(2))}`,
   };
   const render = (ast, tab = '') => {
     const mappedAst = flatten(ast.map(({ key, value, status, children }) => {
-      return renderList[status](key, value, tab);
+      if (status === 'children') return `    ${key}: ${render(children, '  ')}`;
+      return renderList[status](key, value, tab === '' ? '  ' : tab.repeat(2));
     }));
     return `{\n${mappedAst.join('\n')}\n}`;
   };
