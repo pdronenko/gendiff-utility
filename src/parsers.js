@@ -1,6 +1,6 @@
 import yaml from 'js-yaml';
 import ini from 'ini';
-import { has } from 'lodash';
+// import { has } from 'lodash';
 
 const formatsParseList = {
   '.json': JSON.parse,
@@ -8,10 +8,12 @@ const formatsParseList = {
   '.ini': ini.parse,
 };
 
-export default (data, fileExtname) => {
-  if (!has(formatsParseList, fileExtname)) {
-    throw new Error(`${fileExtname} is not correct file format`);
-  }
+export default (data, fileExtname) => formatsParseList[fileExtname](data);
 
-  return formatsParseList[fileExtname](data);
-};
+//  export default (data, fileExtname) => {
+//    if (!has(formatsParseList, fileExtname)) {
+//      throw new Error(`${fileExtname} is not correct file format`);
+//    }
+//
+//    return formatsParseList[fileExtname](data);
+//  };
