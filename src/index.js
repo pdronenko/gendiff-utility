@@ -6,47 +6,52 @@ import fs from 'fs';
 
 const readDataFromFile = pathToFile => fs.readFileSync(pathToFile, 'UTF-8');
 
-const signList = { noChange: ' ', deleted: '-', added: '+' };
-const buildLine = (sign, key, value) => `  ${signList[sign]} ${key}: ${value}`;
-
-export default (pathToFile1, pathToFile2) => {
-  const beforeData = parse(readDataFromFile(pathToFile1), path.extname(pathToFile1));
-  const afterData = parse(readDataFromFile(pathToFile2), path.extname(pathToFile2));
-  const keys = union(Object.keys(beforeData), Object.keys(afterData));
-
-  const diffActions = [
+const buildAST = (beforeData, afterData) => {
+  const astTree = [
     {
-      sign: 'noChange',
+      status: 'noChange',
+      value: (key) => beforeData[key],
+      children: () => [],
       check: (key) => has(beforeData, key) && beforeData[key] === afterData[key],
-      process: (sign, key) => buildLine(sign, key, beforeData[key]),
     },
     {
-      sign: 'deleted',
+      status: 'children',
+      value: () => '',
+      children: (key) => buildAST(beforeData[key], afterData[key]),
+      check: (key) => beforeData[key] instanceof Object && afterData[key] instanceof Object,
+    },
+    {
+      status: 'deleted',
+      value: (key) => beforeData[key],
+      children: () => [],
       check: (key) => has(beforeData, key) && !has(afterData, key),
-      process: (sign, key) => buildLine(sign, key, beforeData[key]),
     },
     {
-      sign: ['deleted', 'added'],
+      status: 'changed',
+      value: (key) => [beforeData[key], afterData[key]],
+      children: () => [],
       check: (key) => has(beforeData, key) && beforeData[key] !== afterData[key],
-      process: (sign, key) => {
-        const deletedLine = buildLine(sign[0], key, beforeData[key]);
-        const addedLine = buildLine(sign[1], key, afterData[key]);
-        return [deletedLine, addedLine];
-      },
     },
     {
-      sign: 'added',
+      status: 'added',
+      value: (key) => afterData[key],
+      children: () => [],
       check: (key) => !has(beforeData, key) && has(afterData, key),
-      process: (sign, key) => buildLine(sign, key, afterData[key]),
     },
   ];
 
-  const diffString = flatten(
-    keys.map((key) => {
-      const { sign, process } = diffActions.find(({ check }) => check(key));
-      return process(sign, key);
-    })
-  ).join('\n');
+  const keys = union(Object.keys(beforeData), Object.keys(afterData));
+  return keys.map((key) => {
+    const { status, value, children } = astTree.find(({ check }) => check(key));
+    return { name: key, status, value: value(key), children: children(key) };
+  });
+};
 
-  return `{\n${diffString}\n}`;
+export default (pathToFile1, pathToFile2) => {
+  const signList = { noChange: ' ', deleted: '-', added: '+' };
+  const buildLine = (sign, key, value) => `  ${signList[sign]} ${key}: ${value}`;
+  const beforeData = parse(readDataFromFile(pathToFile1), path.extname(pathToFile1));
+  const afterData = parse(readDataFromFile(pathToFile2), path.extname(pathToFile2));
+
+  return JSON.stringify(buildAST(beforeData, afterData));
 };
