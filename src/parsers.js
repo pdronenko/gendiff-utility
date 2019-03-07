@@ -8,6 +8,10 @@ const formatsParseList = {
   '.ini': ini.parse,
 };
 
-export const parse = (data, fileExtname) => formatsParseList[fileExtname](data);
+export const parse = (data, fileExtname) => {
+  if (!has(formatsParseList, fileExtname)) {
+    throw new Error(`${fileExtname} is not correct file format`);
+  }
 
-export const canExtnameParse = fileExtname => has(formatsParseList, fileExtname);
+  return formatsParseList[fileExtname](data);
+};

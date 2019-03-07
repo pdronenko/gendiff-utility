@@ -2,7 +2,6 @@
 import gendiff from '..';
 import { version } from '../../package.json';
 import program from 'commander';
-import { canExtnameParse } from '../parsers';
 import path from 'path';
 
 program
@@ -11,14 +10,6 @@ program
   .version(version)
   .option('-f, --format [type]', 'Output format')
   .action((firstConfig, secondConfig) => {
-    if (!canExtnameParse(path.extname(firstConfig))) {
-      console.log(`${firstConfig} is not correct file format`);
-      return;
-    }
-    if (!canExtnameParse(path.extname(secondConfig))) {
-      console.log(`${secondConfig} is not correct file format`);
-      return;
-    }
     const pathProcess = (pathToFile) => {
       const fullPath = path.isAbsolute(pathToFile) ? pathToFile : `${process.cwd()}/${pathToFile}`;
       return path.normalize(fullPath);
