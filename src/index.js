@@ -73,8 +73,9 @@ export default (pathToFile1, pathToFile2) => {
       .map(({ key, value, status, children }) => {
         const newValue = status === 'hasChildren' ? render(children, spaceCount + 4) : value;
         return buildLine(status, key, newValue, spaceCount);
-      }));
-    return `{\n${resultString.join('\n')}\n${' '.repeat(spaceCount)}}`;
+      }))
+      .join('\n');
+    return `{\n${resultString}\n${' '.repeat(spaceCount)}}`;
   };
 
   return render(buildAST(beforeData, afterData));
