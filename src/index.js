@@ -9,32 +9,26 @@ const buildAST = (beforeData, afterData) => {
   const astTree = [
     {
       status: 'noChange',
-      value: key => beforeData[key],
-      children: () => [],
-      check: key => has(beforeData, key) && beforeData[key] === afterData[key],
-    },
-    {
-      status: 'hasChildren',
-      value: () => '',
-      children: key => buildAST(beforeData[key], afterData[key]),
-      check: key => beforeData[key] instanceof Object && afterData[key] instanceof Object,
+      value: key => !(beforeData[key] instanceof Object) ? beforeData[key] : '',
+      check: key => {
+        const isObjects = beforeData[key] instanceof Object && afterData[key] instanceof Object;
+        const isEqual = beforeData[key] === afterData[key];
+        return isObjects || isEqual;
+      },
     },
     {
       status: 'deleted',
       value: key => beforeData[key],
-      children: () => [],
       check: key => has(beforeData, key) && !has(afterData, key),
     },
     {
       status: 'changed',
       value: key => [beforeData[key], afterData[key]],
-      children: () => [],
       check: key => has(beforeData, key) && beforeData[key] !== afterData[key],
     },
     {
       status: 'added',
       value: key => afterData[key],
-      children: () => [],
       check: key => !has(beforeData, key) && has(afterData, key),
     },
   ];
@@ -42,7 +36,8 @@ const buildAST = (beforeData, afterData) => {
   const keys = union(Object.keys(beforeData), Object.keys(afterData));
   return keys.map((key) => {
     const { status, value, children } = astTree.find(({ check }) => check(key));
-    return { key, status, value: value(key), children: children(key) };
+    const children = 
+    return { key, status, value: value(key), children };
   });
 };
 
