@@ -1,21 +1,16 @@
-import { flatten } from 'lodash';
-
-const stringify = data => typeof data !== 'object' ? data : '[complex value]';
+const stringify = data => (typeof data !== 'object' ? data : '[complex value]');
 
 const signList = {
-  changed: (v, delValue, addValue) => `was updated. From ${delValue} to ${addValue}`,
-  added: (value) => `was added with value: ${value}`,
+  changed: (v, delValue, addValue) => `was updated. From ${stringify(delValue)} to ${stringify(addValue)}`,
+  added: value => `was added with value: ${stringify(value)}`,
   deleted: () => 'was removed',
   nested: () => 'was nested',
 };
 
-const buildLine = (type, key, value, delValue, addValue) => {
-    return `Property '${key}' ${signList[type](stringify(value), stringify(delValue), stringify(addValue))}`;
-};
+const buildLine = (type, key, value, delValue, addValue) => `Property '${key}' ${signList[type](value, delValue, addValue)}`;
 
-
-const plainRender = (ast, path = '') => {
-  return ast.map((node) => {
+const plainRender = (ast, path = '') => ast
+  .map((node) => {
     const {
       key, value, type, children, delValue, addValue,
     } = node;
@@ -25,6 +20,5 @@ const plainRender = (ast, path = '') => {
     }
     return buildLine(type, `${path}.${key}`, value, delValue, addValue);
   }).filter(n => n !== null).join('\n');
-};
 
 export default plainRender;
