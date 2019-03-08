@@ -8,7 +8,7 @@ program
   .arguments('<firstConfig> <secondConfig>')
   .description('Compares two configuration files and shows a difference.')
   .version(version)
-  .option('-f, --format [type]', 'Output format')
+  .option('-f, --format [type]', 'Output format (json or plain), json is default', 'json')
   .action((firstConfig, secondConfig) => {
     const pathProcess = (pathToFile) => {
       const fullPath = path.isAbsolute(pathToFile) ? pathToFile : `${process.cwd()}/${pathToFile}`;
@@ -17,7 +17,7 @@ program
 
     const pathToFile1 = pathProcess(firstConfig);
     const pathToFile2 = pathProcess(secondConfig);
-    console.log(gendiff(pathToFile1, pathToFile2));
+    console.log(gendiff(pathToFile1, pathToFile2, program.format));
   });
 
 program.parse(process.argv);
