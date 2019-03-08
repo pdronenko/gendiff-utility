@@ -31,7 +31,7 @@ export default (diff) => {
     const resultString = astDiff
       .map((node) => {
         const {
-          key, value, type, children, delValue, addValue
+          key, value, type, children, delValue, addValue,
         } = node;
         const newValue = type === 'nested' ? render(children, spaceCount + 4) : value;
         return buildLine(type, key, newValue, spaceCount, delValue, addValue);
