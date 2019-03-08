@@ -22,7 +22,8 @@ const buildASTdiff = (beforeData, afterData) => {
     },
     {
       type: 'changed',
-      value: key => [beforeData[key], afterData[key]],
+      addValue: key => afterData[key],
+      delValue: key => beforeData[key],
       children: () => [],
       check: key => has(beforeData, key) && beforeData[key] !== afterData[key],
     },
@@ -36,7 +37,14 @@ const buildASTdiff = (beforeData, afterData) => {
 
   const keys = union(Object.keys(beforeData), Object.keys(afterData));
   return keys.map((key) => {
-    const { type, value, children } = astTreeActions.find(({ check }) => check(key));
+    const {
+      type, addValue, delValue, value, children,
+    } = astTreeActions.find(({ check }) => check(key));
+    if (type === 'changed') {
+      return {
+        key, type, delValue: delValue(key), addValue: addValue(key), children: children(key),
+      };
+    }
     return {
       key, type, value: value(key), children: children(key),
     };
