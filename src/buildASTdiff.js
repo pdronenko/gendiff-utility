@@ -1,52 +1,64 @@
 import { has, union } from 'lodash';
 
-const buildASTdiff = (beforeData, afterData) => {
-  const astTreeActions = [
-    {
-      type: 'unchanged',
-      value: key => beforeData[key],
-      children: () => [],
-      check: key => has(beforeData, key) && beforeData[key] === afterData[key],
-    },
-    {
-      type: 'nested',
-      value: () => '',
-      children: key => buildASTdiff(beforeData[key], afterData[key]),
-      check: key => beforeData[key] instanceof Object && afterData[key] instanceof Object,
-    },
-    {
-      type: 'deleted',
-      value: key => beforeData[key],
-      children: () => [],
-      check: key => has(beforeData, key) && !has(afterData, key),
-    },
-    {
-      type: 'changed',
-      addValue: key => afterData[key],
-      delValue: key => beforeData[key],
-      children: () => [],
-      check: key => has(beforeData, key) && beforeData[key] !== afterData[key],
-    },
-    {
-      type: 'added',
-      value: key => afterData[key],
-      children: () => [],
-      check: key => !has(beforeData, key) && has(afterData, key),
-    },
-  ];
+const astTypeActions = [
+  {
+    type: 'unchanged',
+    value: (key, bData) => bData[key],
+    children: () => [],
+    check: (key, bData, aData) => has(bData, key) && bData[key] === aData[key],
+  },
+  {
+    type: 'nested',
+    value: () => '',
+    children: (key, bData, aData, f) => f(bData[key], aData[key]),
+    check: (key, bData, aData) => bData[key] instanceof Object && aData[key] instanceof Object,
+  },
+  {
+    type: 'deleted',
+    value: (key, bData) => bData[key],
+    children: () => [],
+    check: (key, bData, aData) => has(bData, key) && !has(aData, key),
+  },
+  {
+    type: 'changed',
+    addValue: (key, bData, aData) => aData[key],
+    delValue: (key, bData) => bData[key],
+    children: () => [],
+    check: (key, bData, aData) => has(bData, key) && bData[key] !== aData[key],
+  },
+  {
+    type: 'added',
+    value: (key, bData, aData) => aData[key],
+    children: () => [],
+    check: (key, bData, aData) => !has(bData, key) && has(aData, key),
+  },
+];
 
-  const keys = union(Object.keys(beforeData), Object.keys(afterData));
+const getTypeAction = (key, bData, aData) => astTypeActions
+  .find(({ check }) => check(key, bData, aData));
+
+const buildASTdiff = (bData, aData) => {
+  const preBuild = (f, key, fChild) => f(key, bData, aData, fChild);
+
+  const keys = union(Object.keys(bData), Object.keys(aData));
   return keys.map((key) => {
     const {
       type, addValue, delValue, value, children,
-    } = astTreeActions.find(({ check }) => check(key));
+    } = preBuild(getTypeAction, key);
     if (type === 'changed') {
       return {
-        key, type, delValue: delValue(key), addValue: addValue(key), children: children(key),
+        key,
+        type,
+        delValue: preBuild(delValue, key),
+        addValue: preBuild(addValue, key),
+        children: preBuild(children, key, buildASTdiff),
       };
     }
     return {
-      key, type, value: value(key), children: children(key),
+      key,
+      type,
+      value: preBuild(value, key),
+      children: preBuild(children, key, buildASTdiff),
     };
   });
 };
