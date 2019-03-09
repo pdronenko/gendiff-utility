@@ -11,8 +11,8 @@ const buildLine = (type, key, value, delValue, addValue) => `Property '${key}' $
 
 const plainRender = (ast, path = '') => {
   const dot = path === '' ? '' : '.';
-  
-  return ast.map((node) => {
+
+  const mappedResult = ast.map((node) => {
     const {
       key, value, type, children, delValue, addValue,
     } = node;
@@ -21,6 +21,8 @@ const plainRender = (ast, path = '') => {
       return plainRender(children, `${path}${dot}${key}`);
     }
     return buildLine(type, `${path}${dot}${key}`, value, delValue, addValue);
-  }).filter(n => n !== null).join('\n');}
+  });
+  return mappedResult.filter(n => n !== null).join('\n');
+};
 
 export default plainRender;
