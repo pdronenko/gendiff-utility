@@ -11,7 +11,7 @@ const stringify = (data, depth) => {
   return `{\n${entriesString}\n${genSpaces(depth)}}`;
 };
 
-const buildLine = (depth, sign, key, value) => {
+const buildLine = (sign) => ({ depth, key, value }) => {
   const newValue = stringify(value, depth + 1);
   return `${genSpaces(depth)}  ${sign} ${key}: ${newValue}`;
 };
@@ -19,15 +19,15 @@ const buildLine = (depth, sign, key, value) => {
 const visualActions = [
   {
     type: 'unchanged',
-    build: ({ depth, key, value }) => buildLine(depth, ' ', key, value),
+    build: buildLine(' '),
   },
   {
     type: 'added',
-    build: ({ depth, key, value }) => buildLine(depth, '+', key, value),
+    build: buildLine('+'),
   },
   {
     type: 'deleted',
-    build: ({ depth, key, value }) => buildLine(depth, '-', key, value),
+    build: buildLine('-'),
   },
   {
     type: 'nested',
@@ -40,11 +40,9 @@ const visualActions = [
   },
   {
     type: 'changed',
-    build: ({
-      depth, key, addedValue, deletedValue,
-    }) => {
-      const deletedLine = buildLine(depth, '-', key, deletedValue);
-      const addedLine = buildLine(depth, '+', key, addedValue);
+    build: ({ addedValue, deletedValue, ...rest }) => {
+      const deletedLine = buildLine('-')({ value: deletedValue, ...rest });
+      const addedLine = buildLine('+')({ value: addedValue, ...rest });
       return [deletedLine, addedLine];
     },
   },
