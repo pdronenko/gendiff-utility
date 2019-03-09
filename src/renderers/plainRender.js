@@ -1,13 +1,13 @@
 const stringify = data => (typeof data !== 'object' ? data : '[complex value]');
 
-const signList = {
+const typeList = {
   changed: (v, delValue, addValue) => `was updated. From ${stringify(delValue)} to ${stringify(addValue)}`,
   added: value => `was added with value: ${stringify(value)}`,
   deleted: () => 'was removed',
   nested: () => 'was nested',
 };
 
-const buildLine = (type, key, value, delValue, addValue) => `Property '${key}' ${signList[type](value, delValue, addValue)}`;
+const buildLine = (type, key, value, delValue, addValue) => `Property '${key}' ${typeList[type](value, delValue, addValue)}`;
 
 const plainRender = (ast, path = '') => {
   const dot = path === '' ? '' : '.';
