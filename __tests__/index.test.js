@@ -9,7 +9,7 @@ describe('gendiff', () => {
   const expectedDefaultDiff = fs.readFileSync('__tests__/__fixtures__/expectedDefaultResult', 'UTF-8');
   const expectedPlainDiff = fs.readFileSync('__tests__/__fixtures__/expectedPlainResult', 'UTF-8');
 
-  test.each(extnameTable)('json test %s', (extname) => {
+  test.each(extnameTable)('default and plain test %s', (extname) => {
     const pathToBeforeFile = `${pathToInitialBefore}${extname}`;
     const pathToAfterFile = `${pathToInitialAfter}${extname}`;
     const receivedDefaultDiff = gendiff(pathToBeforeFile, pathToAfterFile, 'default');
