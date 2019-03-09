@@ -11,7 +11,7 @@ const stringify = (data, depth) => {
   return `{\n${entriesString}\n${genSpaces(depth)}}`;
 };
 
-const buildLine = (sign) => ({ depth, key, value }) => {
+const buildLine = sign => ({ depth, key, value }) => {
   const newValue = stringify(value, depth + 1);
   return `${genSpaces(depth)}  ${sign} ${key}: ${newValue}`;
 };
