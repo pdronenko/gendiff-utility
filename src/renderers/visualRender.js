@@ -26,20 +26,18 @@ const buildLine = (type, key, value, spaceCount, delValue, addValue) => {
   return `${' '.repeat(spaceCount)}  ${signList[type]} ${key}: ${stringify(value, spaceCount)}`;
 };
 
-export default (diff) => {
-  const render = (astDiff, spaceCount = 0) => {
-    const resultString = astDiff
-      .map((node) => {
-        const {
-          key, value, type, children, delValue, addValue,
-        } = node;
-        const newValue = type === 'nested' ? render(children, spaceCount + 4) : value;
-        return buildLine(type, key, newValue, spaceCount, delValue, addValue);
-      });
+const visualRender = (astDiff, spaceCount = 0) => {
+  const resultString = astDiff
+    .map((node) => {
+      const {
+        key, value, type, children, deletedValue, addedValue,
+      } = node;
+      const newValue = type === 'nested' ? visualRender(children, spaceCount + 4) : value;
+      return buildLine(type, key, newValue, spaceCount, deletedValue, addedValue);
+    });
 
-    const joinedResult = flatten(resultString).join('\n');
-    return `{\n${joinedResult}\n${' '.repeat(spaceCount)}}`;
-  };
-
-  return render(diff);
+  const joinedResult = flatten(resultString).join('\n');
+  return `{\n${joinedResult}\n${' '.repeat(spaceCount)}}`;
 };
+
+export default visualRender;
