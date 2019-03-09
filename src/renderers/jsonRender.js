@@ -1,1 +1,1 @@
-export default () => 'json';
+export default () => 'test';
