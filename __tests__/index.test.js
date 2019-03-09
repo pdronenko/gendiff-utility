@@ -12,7 +12,7 @@ describe('gendiff', () => {
   test.each(extnameTable)('json test %s', (extname) => {
     const pathToBeforeFile = `${pathToInitialBefore}${extname}`;
     const pathToAfterFile = `${pathToInitialAfter}${extname}`;
-    const receivedDiff = gendiff(pathToBeforeFile, pathToAfterFile, 'json');
+    const receivedDiff = gendiff(pathToBeforeFile, pathToAfterFile, 'default');
     expect(receivedDiff).toBe(expectedJSONDiff);
   });
 
