@@ -9,17 +9,18 @@ const signList = {
 
 const buildLine = (type, key, value, delValue, addValue) => `Property '${key}' ${signList[type](value, delValue, addValue)}`;
 
-const plainRender = (ast, path = '') => ast
-  .map((node) => {
+const plainRender = (ast, path = '') => {
+  const dot = path === '' ? '' : '.';
+  
+  return ast.map((node) => {
     const {
       key, value, type, children, delValue, addValue,
     } = node;
-    const dot = path === '' ? '' : '.';
     if (type === 'unchanged') return null;
     if (type === 'nested') {
       return plainRender(children, `${path}${dot}${key}`);
     }
     return buildLine(type, `${path}${dot}${key}`, value, delValue, addValue);
-  }).filter(n => n !== null).join('\n');
+  }).filter(n => n !== null).join('\n');}
 
 export default plainRender;
