@@ -31,7 +31,9 @@ const visualActions = [
   },
   {
     type: 'nested',
-    build: ({ key, depth, visualRender, children }) => {
+    build: ({
+      key, depth, visualRender, children,
+    }) => {
       const newValue = visualRender(children, depth + 1);
       return `${genSpaces(depth)}    ${key}: ${newValue}`;
     },
