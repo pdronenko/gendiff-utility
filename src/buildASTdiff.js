@@ -3,52 +3,56 @@ import { has, union } from 'lodash';
 const typeActionsList = [
   {
     type: 'unchanged',
-    value: ({ key, bData }) => bData[key],
-    process: ({ type, value, ...rest }) => ({ type, key: rest.key, value: value(rest) }),
-    check: (key, bData, aData) => has(bData, key) && bData[key] === aData[key],
+    value: ({ key, beforeData }) => beforeData[key],
+    process: data => ({ type: data.type, key: data.key, value: data.value(data) }),
+    check: (key, beforeData, afterData) => has(beforeData, key)
+      && beforeData[key] === afterData[key],
   },
   {
     type: 'nested',
     children: ({
-      key, bData, aData, f,
-    }) => f(bData[key], aData[key]),
-    process: ({ type, children, ...rest }) => ({ type, key: rest.key, children: children(rest) }),
-    check: (key, bData, aData) => bData[key] instanceof Object && aData[key] instanceof Object,
+      key, beforeData, afterData, f,
+    }) => f(beforeData[key], afterData[key]),
+    process: data => ({ type: data.type, key: data.key, children: data.children(data) }),
+    check: (key, beforeData, afterData) => beforeData[key] instanceof Object
+      && afterData[key] instanceof Object,
   },
   {
     type: 'deleted',
-    value: ({ key, bData }) => bData[key],
-    process: ({ type, value, ...rest }) => ({ type, key: rest.key, value: value(rest) }),
-    check: (key, bData, aData) => has(bData, key) && !has(aData, key),
+    value: ({ key, beforeData }) => beforeData[key],
+    process: data => ({ type: data.type, key: data.key, value: data.value(data) }),
+    check: (key, beforeData, afterData) => has(beforeData, key) && !has(afterData, key),
   },
   {
     type: 'changed',
-    addedValue: ({ key, aData }) => aData[key],
-    deletedValue: ({ key, bData }) => bData[key],
-    process: ({
-      type, addedValue, deletedValue, ...rest
-    }) => ({
-      type, key: rest.key, addedValue: addedValue(rest), deletedValue: deletedValue(rest),
+    addedValue: ({ key, afterData }) => afterData[key],
+    deletedValue: ({ key, beforeData }) => beforeData[key],
+    process: data => ({
+      type: data.type,
+      key: data.key,
+      addedValue: data.addedValue(data),
+      deletedValue: data.deletedValue(data),
     }),
-    check: (key, bData, aData) => has(bData, key) && bData[key] !== aData[key],
+    check: (key, beforeData, afterData) => has(beforeData, key)
+      && beforeData[key] !== afterData[key],
   },
   {
     type: 'added',
-    value: ({ key, aData }) => aData[key],
-    process: ({ type, value, ...rest }) => ({ type, key: rest.key, value: value(rest) }),
-    check: (key, bData, aData) => !has(bData, key) && has(aData, key),
+    value: ({ key, afterData }) => afterData[key],
+    process: data => ({ type: data.type, key: data.key, value: data.value(data) }),
+    check: (key, beforeData, afterData) => !has(beforeData, key) && has(afterData, key),
   },
 ];
 
-const getTypeActions = (key, bData, aData) => typeActionsList
-  .find(({ check }) => check(key, bData, aData));
+const getTypeActions = (key, beforeData, afterData) => typeActionsList
+  .find(({ check }) => check(key, beforeData, afterData));
 
-const buildASTdiff = (bData, aData) => {
-  const keys = union(Object.keys(bData), Object.keys(aData));
+const buildASTdiff = (beforeData, afterData) => {
+  const keys = union(Object.keys(beforeData), Object.keys(afterData));
   return keys.map((key) => {
-    const { process, ...rest } = getTypeActions(key, bData, aData);
-    return process({
-      ...rest, f: buildASTdiff, key, bData, aData,
+    const actions = getTypeActions(key, beforeData, afterData);
+    return actions.process({
+      ...actions, f: buildASTdiff, key, beforeData, afterData,
     });
   });
 };
