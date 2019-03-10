@@ -27,11 +27,10 @@ const typeActionsList = [
   },
   {
     type: 'changed',
-    process: data => ({
-      type: data.type,
-      key: data.key,
-      addedValue: data.afterData[data.key],
-      deletedValue: data.beforeData[data.key],
+    process: ({
+      type, key, beforeData, afterData,
+    }) => ({
+      type, key, addedValue: afterData[key], deletedValue: beforeData[key],
     }),
     check: (key, beforeData, afterData) => has(beforeData, key)
       && beforeData[key] !== afterData[key],
