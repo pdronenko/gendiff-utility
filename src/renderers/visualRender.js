@@ -17,20 +17,20 @@ const buildLine = sign => ({ depth, key, value }) => {
 };
 
 const visualActions = {
-    unchanged: buildLine(' '),
-    added: buildLine('+'),
-    deleted: buildLine('-'),
-    nested: ({
-      key, depth, visualRender, children,
-    }) => {
-      const newValue = visualRender(children, depth + 1);
-      return `${genSpaces(depth)}    ${key}: ${newValue}`;
-    },
-    changed: ({ addedValue, deletedValue, ...rest }) => {
-      const deletedLine = buildLine('-')({ value: deletedValue, ...rest });
-      const addedLine = buildLine('+')({ value: addedValue, ...rest });
-      return [deletedLine, addedLine];
-    },
+  unchanged: buildLine(' '),
+  added: buildLine('+'),
+  deleted: buildLine('-'),
+  nested: ({
+    key, depth, visualRender, children,
+  }) => {
+    const newValue = visualRender(children, depth + 1);
+    return `${genSpaces(depth)}    ${key}: ${newValue}`;
+  },
+  changed: ({ addedValue, deletedValue, ...rest }) => {
+    const deletedLine = buildLine('-')({ value: deletedValue, ...rest });
+    const addedLine = buildLine('+')({ value: addedValue, ...rest });
+    return [deletedLine, addedLine];
+  },
 };
 
 const visualRender = (astDiff, depth = 0) => {

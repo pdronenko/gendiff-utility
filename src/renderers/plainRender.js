@@ -1,6 +1,6 @@
 const stringify = data => (typeof data !== 'object' ? data : '[complex value]');
 
-const typeList = {
+const plainActions = {
   unchanged: () => null,
   nested: ({ plainRender, children, pathToKey }) => plainRender(children, pathToKey),
   changed: ({ pathToKey, deletedValue, addedValue }) => {
@@ -16,7 +16,7 @@ const plainRender = (ast, path = '') => {
 
   const mappedResult = ast.map((node) => {
     const pathToKey = `${path}${dot}${node.key}`;
-    return typeList[node.type]({ pathToKey, plainRender, ...node });
+    return plainActions[node.type]({ pathToKey, plainRender, ...node });
   });
   return mappedResult.filter(str => str !== null).join('\n');
 };
