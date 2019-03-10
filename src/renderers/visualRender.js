@@ -16,48 +16,26 @@ const buildLine = sign => ({ depth, key, value }) => {
   return `${genSpaces(depth)}  ${sign} ${key}: ${newValue}`;
 };
 
-const visualActions = [
-  {
-    type: 'unchanged',
-    build: buildLine(' '),
-  },
-  {
-    type: 'added',
-    build: buildLine('+'),
-  },
-  {
-    type: 'deleted',
-    build: buildLine('-'),
-  },
-  {
-    type: 'nested',
-    build: ({
+const visualActions = {
+    unchanged: buildLine(' '),
+    added: buildLine('+'),
+    deleted: buildLine('-'),
+    nested: ({
       key, depth, visualRender, children,
     }) => {
       const newValue = visualRender(children, depth + 1);
       return `${genSpaces(depth)}    ${key}: ${newValue}`;
     },
-  },
-  {
-    type: 'changed',
-    build: ({ addedValue, deletedValue, ...rest }) => {
+    changed: ({ addedValue, deletedValue, ...rest }) => {
       const deletedLine = buildLine('-')({ value: deletedValue, ...rest });
       const addedLine = buildLine('+')({ value: addedValue, ...rest });
       return [deletedLine, addedLine];
     },
-  },
-];
-
-const getVisualAction = nodeType => visualActions.find(({ type }) => nodeType === type);
+};
 
 const visualRender = (astDiff, depth = 0) => {
   const resultString = astDiff
-    .map(({ type, ...rest }) => {
-      const { build } = getVisualAction(type);
-      return build({
-        type, visualRender, depth, ...rest,
-      });
-    });
+    .map(node => visualActions[node.type]({ visualRender, depth, ...node }));
 
   const joinedResult = flatten(resultString).join('\n');
   return `{\n${joinedResult}\n${genSpaces(depth)}}`;
