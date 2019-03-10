@@ -8,17 +8,22 @@ const typeActionsList = [
       && beforeData[key] === afterData[key],
   },
   {
+    type: 'deleted',
+    process: data => ({ type: data.type, key: data.key, value: data.beforeData[data.key] }),
+    check: (key, beforeData, afterData) => has(beforeData, key) && !has(afterData, key),
+  },
+  {
+    type: 'added',
+    process: data => ({ type: data.type, key: data.key, value: data.afterData[data.key] }),
+    check: (key, beforeData, afterData) => !has(beforeData, key) && has(afterData, key),
+  },
+  {
     type: 'nested',
     process: ({
       type, key, beforeData, afterData, f,
     }) => ({ type, key, children: f(beforeData[key], afterData[key]) }),
     check: (key, beforeData, afterData) => beforeData[key] instanceof Object
       && afterData[key] instanceof Object,
-  },
-  {
-    type: 'deleted',
-    process: data => ({ type: data.type, key: data.key, value: data.beforeData[data.key] }),
-    check: (key, beforeData, afterData) => has(beforeData, key) && !has(afterData, key),
   },
   {
     type: 'changed',
@@ -30,11 +35,6 @@ const typeActionsList = [
     }),
     check: (key, beforeData, afterData) => has(beforeData, key)
       && beforeData[key] !== afterData[key],
-  },
-  {
-    type: 'added',
-    process: data => ({ type: data.type, key: data.key, value: data.afterData[data.key] }),
-    check: (key, beforeData, afterData) => !has(beforeData, key) && has(afterData, key),
   },
 ];
 
