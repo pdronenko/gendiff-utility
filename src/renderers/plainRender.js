@@ -2,13 +2,13 @@ const stringify = data => (typeof data !== 'object' ? data : '[complex value]');
 
 const typeList = {
   unchanged: () => null,
-  nested: ({ plainRender, children, pathToKey, key }) => plainRender(children, pathToKey),
+  nested: ({ plainRender, children, pathToKey }) => plainRender(children, pathToKey),
   changed: ({ pathToKey, deletedValue, addedValue }) => {
     const fromToStr = `From ${stringify(deletedValue)} to ${stringify(addedValue)}`;
     return `Property '${pathToKey}' was updated. ${fromToStr}`;
   },
   added: ({ pathToKey, value }) => `Property '${pathToKey}' was added with value: ${stringify(value)}`,
-  deleted: ({ pathToKey, value }) => `Property '${pathToKey}' was removed`,
+  deleted: ({ pathToKey }) => `Property '${pathToKey}' was removed`,
 };
 
 const plainRender = (ast, path = '') => {
