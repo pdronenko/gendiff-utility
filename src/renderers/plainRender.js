@@ -1,31 +1,24 @@
 const stringify = data => (typeof data !== 'object' ? data : '[complex value]');
 
 const typeList = {
-  changed: (v, deletedValue, addedValue) => `was updated. From ${stringify(deletedValue)} to ${stringify(addedValue)}`,
-  added: value => `was added with value: ${stringify(value)}`,
-  deleted: () => 'was removed',
-  nested: () => 'was nested',
-};
-
-const buildLine = (type, key, value, deletedValue, addedValue) => {
-  if (type === 'unchanged') return null;
-  const diffStr = typeList[type](value, deletedValue, addedValue);
-  return `Property '${key}' ${diffStr}`;
+  unchanged: () => null,
+  nested: ({ plainRender, children, pathToKey, key }) => plainRender(children, pathToKey),
+  changed: ({ pathToKey, deletedValue, addedValue }) => {
+    const fromToStr = `From ${stringify(deletedValue)} to ${stringify(addedValue)}`;
+    return `Property '${pathToKey}' was updated. ${fromToStr}`;
+  },
+  added: ({ pathToKey, value }) => `Property '${pathToKey}' was added with value: ${stringify(value)}`,
+  deleted: ({ pathToKey, value }) => `Property '${pathToKey}' was removed`,
 };
 
 const plainRender = (ast, path = '') => {
   const dot = path === '' ? '' : '.';
 
-  const mappedResult = ast.map(({
-    key, value, type, children, deletedValue, addedValue,
-  }) => {
-    const newPath = `${path}${dot}${key}`;
-    if (type === 'nested') {
-      return plainRender(children, newPath);
-    }
-    return buildLine(type, newPath, value, deletedValue, addedValue);
+  const mappedResult = ast.map((node) => {
+    const pathToKey = `${path}${dot}${node.key}`;
+    return typeList[node.type]({ pathToKey, plainRender, ...node });
   });
-  return mappedResult.filter(n => n !== null).join('\n');
+  return mappedResult.filter(str => str !== null).join('\n');
 };
 
 export default plainRender;
