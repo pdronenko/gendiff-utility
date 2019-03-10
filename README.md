@@ -22,7 +22,7 @@ $ gendiff [options] <firstConfig> <secondConfig>
 ```
 
 ## Examples
-## Plain format
+### Plain format
 ```sh
 $ gendiff -f plain before.ini after.ini
 
@@ -37,7 +37,7 @@ Property 'group1.nest' was updated. From [complex value] to str
 Property 'group2' was removed
 Property 'group3' was added with value: [complex value]
 ```
-## Visual format
+### Visual format
 ```sh
 $ gendiff -f visual before.ini after.ini
 
@@ -76,7 +76,7 @@ $ gendiff -f visual before.ini after.ini
     }
 }
 ```
-## JSON format
+### JSON format
 ```sh
 $ gendiff -f json before.ini after.ini
 
