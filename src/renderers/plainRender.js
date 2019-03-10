@@ -2,22 +2,18 @@ const stringify = data => (typeof data !== 'object' ? data : '[complex value]');
 
 const plainActions = {
   unchanged: () => null,
-  nested: ({ plainRender, children, pathToKey }) => plainRender(children, pathToKey),
-  changed: ({ pathToKey, deletedValue, addedValue }) => {
+  nested: ({ plainRender, children, path }) => plainRender(children, `${path}.`),
+  changed: ({ path, deletedValue, addedValue }) => {
     const fromToStr = `From ${stringify(deletedValue)} to ${stringify(addedValue)}`;
-    return `Property '${pathToKey}' was updated. ${fromToStr}`;
+    return `Property '${path}' was updated. ${fromToStr}`;
   },
-  added: ({ pathToKey, value }) => `Property '${pathToKey}' was added with value: ${stringify(value)}`,
-  deleted: ({ pathToKey }) => `Property '${pathToKey}' was removed`,
+  added: ({ path, value }) => `Property '${path}' was added with value: ${stringify(value)}`,
+  deleted: ({ path }) => `Property '${path}' was removed`,
 };
 
 const plainRender = (ast, path = '') => {
-  const dot = path === '' ? '' : '.';
-
-  const mappedResult = ast.map((node) => {
-    const pathToKey = `${path}${dot}${node.key}`;
-    return plainActions[node.type]({ pathToKey, plainRender, ...node });
-  });
+  const mappedResult = ast
+    .map(node => plainActions[node.type]({ path: `${path}${node.key}`, plainRender, ...node }));
   return mappedResult.filter(str => str !== null).join('\n');
 };
 
