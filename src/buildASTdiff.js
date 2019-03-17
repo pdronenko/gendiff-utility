@@ -1,52 +1,41 @@
-import { has, union } from 'lodash';
+import { has, union, isObject } from 'lodash';
 
 const typeActionsList = [
   {
     type: 'unchanged',
-    process: ({ type, key, beforeData }) => ({ type, key, value: beforeData[key] }),
-    check: (key, beforeData, afterData) => has(beforeData, key)
-      && beforeData[key] === afterData[key],
+    process: value => ({ value }),
+    check: (key, obj1, obj2) => has(obj1, key) && obj1[key] === obj2[key],
   },
   {
     type: 'deleted',
-    process: ({ type, key, beforeData }) => ({ type, key, value: beforeData[key] }),
-    check: (key, beforeData, afterData) => has(beforeData, key) && !has(afterData, key),
+    process: value => ({ value }),
+    check: (key, obj1, obj2) => has(obj1, key) && !has(obj2, key),
   },
   {
     type: 'added',
-    process: ({ type, key, afterData }) => ({ type, key, value: afterData[key] }),
-    check: (key, beforeData, afterData) => !has(beforeData, key) && has(afterData, key),
+    process: (value1, value2) => ({ value: value2 }),
+    check: (key, obj1, obj2) => !has(obj1, key) && has(obj2, key),
   },
   {
     type: 'nested',
-    process: ({
-      type, key, beforeData, afterData, f,
-    }) => ({ type, key, children: f(beforeData[key], afterData[key]) }),
-    check: (key, beforeData, afterData) => beforeData[key] instanceof Object
-      && afterData[key] instanceof Object,
+    process: (value1, value2, f) => ({ children: f(value1, value2) }),
+    check: (key, obj1, obj2) => isObject(obj1[key]) && isObject(obj2[key]),
   },
   {
     type: 'changed',
-    process: ({
-      type, key, beforeData, afterData,
-    }) => ({
-      type, key, addedValue: afterData[key], deletedValue: beforeData[key],
-    }),
-    check: (key, beforeData, afterData) => has(beforeData, key)
-      && beforeData[key] !== afterData[key],
+    process: (value1, value2) => ({ addedValue: value2, deletedValue: value1 }),
+    check: (key, obj1, obj2) => has(obj1, key) && obj1[key] !== obj2[key],
   },
 ];
 
-const getTypeActions = (key, beforeData, afterData) => typeActionsList
-  .find(({ check }) => check(key, beforeData, afterData));
+const getTypeActions = (key, obj1, obj2) => typeActionsList
+  .find(({ check }) => check(key, obj1, obj2));
 
-const buildASTdiff = (beforeData, afterData) => {
-  const keys = union(Object.keys(beforeData), Object.keys(afterData));
+const buildASTdiff = (obj1, obj2) => {
+  const keys = union(Object.keys(obj1), Object.keys(obj2));
   return keys.map((key) => {
-    const { type, process } = getTypeActions(key, beforeData, afterData);
-    return process({
-      type, f: buildASTdiff, key, beforeData, afterData,
-    });
+    const { type, process } = getTypeActions(key, obj1, obj2);
+    return { type, key, ...process(obj1[key], obj2[key], buildASTdiff) };
   });
 };
 
