@@ -10,8 +10,6 @@ In this project, focus was on test-driven development (**TDD**, **Jest**). I got
 
 ##
 
-# gendiff-pdronenko
-
 [![Maintainability](https://api.codeclimate.com/v1/badges/ecc6395df5c6d892ed8c/maintainability)](https://codeclimate.com/github/pdronenko/project-lvl2-s439/maintainability)
 [![Build Status](https://travis-ci.org/pdronenko/project-lvl2-s439.svg?branch=master)](https://travis-ci.org/pdronenko/project-lvl2-s439)
 
