@@ -1,6 +1,12 @@
+# gendiff CLI utility
+
+gendiff CLI utility, which compares two configuration files and shows a difference.
+
 ##
 
-Repository of gendiff cli utility, which compares two configuration files and shows a difference.
+In this project, focus was on test-driven development (**TDD**, **Jest**). I got acquainted with parsing of **JSON/YAML/INI** formats, also learned how to work with the file system through **Node.js**. To build diffs between files, I used an **AST-tree**. Also actively used type dispatch. First steps in a well-designed application architecture.
+
+В этом проекте основной упор был сделан на разработку через тестирование (**TDD**, **Jest**). Познакомился с парсингом форматов **JSON/YAML/INI**, так же научился работать с файловой системой через **Node.js**. Для построения дифов между файлами использовал **AST-дерево**. Так же активно использовал диспетчеризацию по типу. Первые шаги в разработке приложения с продуманной архитектурой.
 
 ##
 
